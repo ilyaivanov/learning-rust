@@ -15,20 +15,17 @@ num-format = "0.4.0"
 name = "main"
 path = "src/main.rs"
 
+[[bin]]
+name = "department"
+path = "src/department.rs"
 
 [[bin]]
 name = "numbers"
 path = "src/numbers.rs"
 
 [[bin]]
-name = "test"
-path = "src/test.rs"
-
-
-[[bin]]
 name = "todo"
 path = "src/todo.rs"
-
 
 [[bin]]
 name = "number_game"

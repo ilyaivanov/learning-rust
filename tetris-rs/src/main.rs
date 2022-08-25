@@ -1,9 +1,9 @@
 use crossterm::{
     event::{read, Event, KeyCode},
-    execute, terminal, Result,
+    execute, style, terminal, Result,
 };
 
-use std::io::stdout;
+use std::{collections::HashMap, io::stdout};
 
 mod render;
 
@@ -29,8 +29,20 @@ fn main() -> Result<()> {
         vec![0, 0, 0, 0, 0, 1, 4, 4, 4, 0],
     ];
 
+    let colors = HashMap::from([
+        (1, style::Color::Red),
+        (2, style::Color::Yellow),
+        (3, style::Color::Blue),
+        (4, style::Color::Green),
+        (5, style::Color::Magenta),
+        (6, style::Color::Cyan),
+        (7, style::Color::DarkYellow),
+    ]);
+
+    let game = GameState { board, colors };
+
     loop {
-        render::draw(&mut out, &board)?;
+        render::draw(&mut out, &game)?;
 
         // `read()` blocks until an `Event` is available
         match read()? {
@@ -48,4 +60,9 @@ fn main() -> Result<()> {
     }
 
     execute!(&out, terminal::LeaveAlternateScreen)
+}
+
+pub struct GameState {
+    board: Vec<Vec<usize>>,
+    colors: HashMap<usize, style::Color>,
 }

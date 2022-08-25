@@ -48,7 +48,7 @@ pub fn draw(out: &mut io::Stdout, game: &game::GameState) -> Result<()> {
         set_color(out, border_color);
         println!("█");
     }
-    println!("{}{}", &padding_str, "▄".repeat(board_width_in_chars));
+    println!("{}{}", &padding_str, "▀".repeat(board_width_in_chars));
 
     Ok(())
 }

@@ -1,10 +1,10 @@
 use crossterm::{cursor, execute, style, terminal, Result};
 
-use std::io;
+use std::io::{self, Stdout};
 
-use crate::GameState;
+use crate::game::{self, GameState};
 
-pub fn draw(out: &mut io::Stdout, game: &GameState) -> Result<()> {
+pub fn draw(out: &mut io::Stdout, game: &game::GameState) -> Result<()> {
     execute!(
         out,
         style::ResetColor,
@@ -14,50 +14,56 @@ pub fn draw(out: &mut io::Stdout, game: &GameState) -> Result<()> {
     )?;
 
     let board = &game.board;
-    let colors = &game.colors;
 
     let size = terminal::size().expect("Couldn't get the size of the terminal");
+    let terminal_width = size.0 as usize;
 
-    let width = size.0 as usize;
-    let padding = (width - (board[0].len() * 2 + 2)) / 2;
+    let board_width_in_chars = board[0].len() * 2 + 2;
+
+    let padding = (terminal_width - board_width_in_chars) / 2;
     let padding_str = " ".repeat(padding);
-
-    let top_side = "▄".repeat(board[0].len() * 2 + 2);
-    let bottom_side = "▀".repeat(board[0].len() * 2 + 2);
 
     let border_color = style::Color::DarkGrey;
 
-    crossterm::execute!(out, style::SetForegroundColor(border_color))?;
+    set_color(out, border_color);
 
     for _ in 0..2 {
         println!();
     }
 
-    println!("{}{}", &padding_str, top_side);
+    println!("{}{}", &padding_str, "▄".repeat(board_width_in_chars));
 
     for line in board {
         print!("{}█", padding_str);
         for c in line {
             match c {
-                0 => {
-                    print!("  ");
-                }
-                v => {
-                    let color = colors
-                        .get(&v)
-                        .expect(&format!("Couldn't find color for code: {}", v));
+                0 => print!("  "),
 
-                    crossterm::execute!(out, style::SetForegroundColor(*color))?;
+                v => {
+                    set_color(out, get_color(&game, *v));
                     print!("██");
                 }
             }
         }
-        crossterm::execute!(out, style::SetForegroundColor(border_color))?;
+        set_color(out, border_color);
         println!("█");
     }
-    println!("{}{}", &padding_str, bottom_side);
+    println!("{}{}", &padding_str, "▄".repeat(board_width_in_chars));
 
     Ok(())
+}
+
+fn get_color(game: &GameState, color_code: usize) -> style::Color {
+    let c = game
+        .colors
+        .get(&color_code)
+        .expect(&format!("Couldn't find color for code: {}", color_code));
+
+    return *c;
+}
+
+fn set_color(out: &mut Stdout, color: style::Color) {
+    let _ = crossterm::execute!(out, style::SetForegroundColor(color));
 }
 
 // ║╚╝╔╗╣╠╩═╬╦

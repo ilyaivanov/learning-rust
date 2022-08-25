@@ -1,18 +1,10 @@
-use crossterm::{cursor, execute, style, terminal, Result};
+use crossterm::{style, terminal, Result};
 
 use std::io::{self, Stdout};
 
 use crate::game::{self, GameState};
 
 pub fn draw(out: &mut io::Stdout, game: &game::GameState) -> Result<()> {
-    execute!(
-        out,
-        style::ResetColor,
-        terminal::Clear(terminal::ClearType::All),
-        cursor::Hide,
-        cursor::MoveTo(0, 0),
-    )?;
-
     let board = &game.board;
 
     let size = terminal::size().expect("Couldn't get the size of the terminal");

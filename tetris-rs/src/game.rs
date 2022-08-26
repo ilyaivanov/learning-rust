@@ -65,28 +65,26 @@ fn can_be_moved(game: &GameState, direction: MoveDirection) -> bool {
         cells_moving.insert((p.x, p.y));
     }
 
+    let is_cell_occupied = |x: usize, y: usize| {
+        let r = (x, y);
+        game.board[y][x] != 0 && !cells_moving.contains(&r)
+    };
+
     if matches!(direction, MoveDirection::Down) {
         for p in &game.figure_falling {
-            let r = (p.x, p.y + 1);
-            if p.y + 1 > game.board.len() - 1
-                || (game.board[p.y + 1][p.x] != 0 && !cells_moving.contains(&r))
-            {
+            if p.y + 1 > game.board.len() - 1 || is_cell_occupied(p.x, p.y + 1) {
                 return false;
             }
         }
     } else if matches!(direction, MoveDirection::Left) {
         for p in &game.figure_falling {
-            let r = (if p.x > 0 { p.x - 1 } else { 0 }, p.y);
-            if p.x <= 0 || (game.board[p.y][p.x - 1] != 0 && !cells_moving.contains(&r)) {
+            if p.x <= 0 || is_cell_occupied(p.x - 1, p.y) {
                 return false;
             }
         }
     } else {
         for p in &game.figure_falling {
-            let r = (p.x + 1, p.y);
-            if p.x + 1 > game.board[0].len() - 1
-                || (game.board[p.y][p.x + 1] != 0 && !cells_moving.contains(&r))
-            {
+            if p.x + 1 > game.board[0].len() - 1 || is_cell_occupied(p.x + 1, p.y) {
                 return false;
             }
         }

@@ -9,7 +9,7 @@ use std::{
     time::{Duration, Instant},
 };
 
-mod game;
+pub mod game;
 mod render;
 
 fn main() -> Result<()> {
@@ -53,6 +53,10 @@ fn main() -> Result<()> {
                     KeyCode::Down => {
                         game::drop_one_step(&mut game_state);
                         last_drop_at = now.elapsed().as_millis();
+                        need_to_draw = true;
+                    }
+                    KeyCode::Up => {
+                        game::rotate(&mut game_state);
                         need_to_draw = true;
                     }
                     KeyCode::Char(' ') => {

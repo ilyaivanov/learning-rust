@@ -4,21 +4,13 @@ use rand::Rng;
 use std::collections::{HashMap, HashSet};
 
 pub fn create_game() -> GameState {
-    let board = vec![
-        vec![0; 10],
-        vec![0; 10],
-        vec![0; 10],
-        vec![0; 10],
-        vec![0; 10],
-        vec![0; 10],
-        vec![0; 10],
-        vec![0; 10],
-        vec![0; 10],
-        vec![0; 10],
-        vec![0; 10],
-        vec![0; 10],
-        vec![0; 10],
-    ];
+    let level_width = 10;
+    let level_height = 15;
+    let mut board = Vec::new();
+
+    for _ in 0..level_height {
+        board.push(vec![0; level_width]);
+    }
 
     let colors = HashMap::from([
         (1, style::Color::Red),
@@ -63,9 +55,7 @@ pub fn shift(game: &mut GameState, direction: MoveDirection) {
 fn create_new_random_figure(game: &mut GameState) {
     game.figure_falling.clear();
     insert_new_figure(game);
-    for p in &game.figure_falling {
-        game.board[p.y][p.x] = game.figure_falling_color;
-    }
+    paint_falling_figure(game);
 }
 
 fn can_be_moved(game: &GameState, direction: MoveDirection) -> bool {
@@ -106,12 +96,7 @@ fn can_be_moved(game: &GameState, direction: MoveDirection) -> bool {
 }
 
 fn move_g(game: &mut GameState, direction: MoveDirection) {
-    let first_cell = &game.figure_falling[0];
-    let figure_color = game.board[first_cell.y][first_cell.x];
-
-    for p in &game.figure_falling {
-        game.board[p.y][p.x] = 0;
-    }
+    unpaint_falling_figure(game);
 
     for p in game.figure_falling.iter_mut() {
         if matches!(direction, MoveDirection::Down) {
@@ -122,8 +107,18 @@ fn move_g(game: &mut GameState, direction: MoveDirection) {
             p.x += 1;
         };
     }
+    paint_falling_figure(game)
+}
+
+fn unpaint_falling_figure(game: &mut GameState) {
     for p in &game.figure_falling {
-        game.board[p.y][p.x] = figure_color;
+        game.board[p.y][p.x] = 0;
+    }
+}
+
+fn paint_falling_figure(game: &mut GameState) {
+    for p in &game.figure_falling {
+        game.board[p.y][p.x] = game.figure_falling_color;
     }
 }
 
